@@ -50,7 +50,7 @@ class Property
     @oper(operator) for operator in supported
 
   oper: (operator, validator) ->
-    validator ?= (args..., next) -> next()
+    validator ?= (args..., pass, fail) -> pass()
     @supported[operator] = validator
     @
 
@@ -58,11 +58,11 @@ class Property
     @pattern.test name
 
   validator: (operator) ->
-    @supported[operator.name] ? (args..., failure, success) =>
-      failure "The '#{@name}' property does not support the '#{operator.name}' operation."
+    @supported[operator.name] ? (args..., pass, fail) =>
+      fail "The '#{@name}' property does not support the '#{operator.name}' operation."
 
-  validate: (operator, args..., failure, success) ->
-    @validator(operator)(args..., failure, success)
+  validate: (operator, args..., pass, fail) ->
+    @validator(operator)(args..., pass, fail)
 
 
 class Parser
@@ -105,11 +105,11 @@ class Parser
             hargs = compact [arg[prop]]
             hargs = flatten(hargs, true) if operator.plural
             property.validate operator, hargs...,
-              (errs...) ->
-                errors.add prop, error for error in errs
-                next()
               (value) ->
                 arg[prop] = value
+                next()
+              (errs...) ->
+                errors.add prop, error for error in errs
                 next()
           () ->
             updates["$#{operator.canonical}"] = extend(updates["$#{operator.canonical}"] || {}, operator.transform arg)
