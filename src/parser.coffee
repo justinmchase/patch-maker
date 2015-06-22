@@ -1,11 +1,11 @@
-{ find, isArray, isString, isPlainObject, isFunction, extend, compact, flatten, identity, object, curry } = require 'lodash'
+{ find, isArray, isEmpty, isString, isPlainObject, isFunction, extend, compact, flatten, identity, object, curry } = require 'lodash'
 { eachSeries } = require 'async'
 Errors = require './errors'
 
 to_object = (value, keys) ->
   return null unless isString(keys) or isArray(keys)
   keys = [].concat keys
-  object keys, (value for key in keys)
+  updates = object keys, (value for key in keys)
 
 to_array = (props) ->
   return null unless isPlainObject props
@@ -92,6 +92,9 @@ class Parser
         args = operator.transform arg
         unless args?
           errors.add "Malformed arguments specified for operation: '#{operation}'."
+          return next()
+        if isEmpty args
+          errors.add "No arguments specified for operation: '#{operation}'."
           return next()
         eachSeries ([prop, value] for prop, value of args),
           ([prop, value], next) =>

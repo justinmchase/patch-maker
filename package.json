@@ -1,6 +1,6 @@
 {
   "name": "patch-maker",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Patch Maker is a PATCH submission parser builder/dsl for mongo-backed resources.",
   "keywords": [
     "mongo",
