@@ -1,4 +1,4 @@
-{ find, isArray, isEmpty, isString, isPlainObject, isFunction, extend, compact, flatten, identity, object, curry } = require 'lodash'
+{ curry, extend, find, flatten, identity, isArray, isEmpty, isFunction, isPlainObject, isString, object, without } = require 'lodash'
 { eachSeries } = require 'async'
 Errors = require './errors'
 
@@ -105,7 +105,7 @@ class Parser
               return next()
             changed[prop] ?= 0
             changed[prop]++
-            hargs = compact [arg[prop]]
+            hargs = without [arg[prop]], undefined
             hargs = flatten(hargs, true) if operator.plural
             property.validate operator, hargs...,
               (value) ->
