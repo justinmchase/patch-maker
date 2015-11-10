@@ -1,6 +1,6 @@
 {
   "name": "patch-maker",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Patch Maker is a PATCH submission parser builder/dsl for mongo-backed resources.",
   "keywords": [
     "mongo",
@@ -21,25 +21,20 @@
   "contributors": [
     "Sean M. Duncan <bitbutcher@gmail.com>"
   ],
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/bitbutcher/patch-maker/blob/master/LICENSE-MIT"
-    }
-  ],
+  "license": "MIT",
   "main": "lib/index.js",
   "engines": {
-    "node": "^0.12.0",
-    "npm": "^2.10.0"
+    "node": ">=0.10.0 <6.0.0",
+    "npm": ">=2.0.0 <4.0.0"
   },
   "dependencies": {
-    "async": "^1.2.0",
-    "lodash": "^3.9.3"
+    "async": ">=1.2.0",
+    "lodash": ">=3.0.0"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-contrib-clean": "^0.6.0",
     "grunt-contrib-coffee": "^0.13.0",
-    "grunt-contrib-copy": "^0.8.0"
+    "grunt-contrib-copy": "^0.8.2"
   }
 }
