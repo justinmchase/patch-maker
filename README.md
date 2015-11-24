@@ -33,13 +33,13 @@ app.patch '/types', (req, res, next) ->
         Type(req).find(name: $in: types).all (actual) ->
           return fail 'Unrecognized type(s) specified.' unless types.length is actual.length
           pass types
-      @oper 'add', (types..., pass, fail) ->
+      @oper 'add', (types, pass, fail) ->
         for type in types
           return fail 'A type cannot be empty.' if is_empty type
         Type(req).find(name: $in: types).all (actual) ->
           return fail 'Unrecognized type(s) specified.' unless types.length is actual.length
           pass types
-      @oper 'rem', (types..., pass, fail) ->
+      @oper 'rem', (types, pass, fail) ->
         if is_empty difference(grant.types, types)
           return fail 'The update must leave the grant with at least one type.'
         pass types

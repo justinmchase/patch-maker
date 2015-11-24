@@ -1,4 +1,4 @@
-{ curry, extend, find, flatten, identity, isArray, isEmpty, isFunction, isPlainObject, isString, object, without } = require 'lodash'
+{ curry, extend, find, identity, isArray, isEmpty, isFunction, isPlainObject, isString, object } = require 'lodash'
 { eachSeries } = require 'async'
 Errors = require './errors'
 
@@ -58,11 +58,12 @@ class Property
     @pattern.test name
 
   validator: (operator) ->
-    @supported[operator.name] ? (args..., pass, fail) =>
+    @supported[operator.name] ? (args, pass, fail) =>
       fail "The '#{@name}' property does not support the '#{operator.name}' operation."
 
-  validate: (operator, args..., pass, fail) ->
-    @validator(operator)(args..., pass, fail)
+  validate: (operator, args, pass, fail) ->
+    args = [].concat args if operator.plural
+    @validator(operator)(args, pass, fail)
 
 
 class Parser
@@ -105,9 +106,7 @@ class Parser
               return next()
             changed[prop] ?= 0
             changed[prop]++
-            hargs = without [arg[prop]], undefined
-            hargs = flatten(hargs, true) if operator.plural
-            property.validate operator, hargs...,
+            property.validate operator, arg[prop],
               (value) ->
                 arg[prop] = value
                 next()
