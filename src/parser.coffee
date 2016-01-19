@@ -1,11 +1,12 @@
-{ curry, extend, find, identity, isArray, isEmpty, isFunction, isPlainObject, isString, object } = require 'lodash'
+{ assign, curry, find, identity, isArray, isEmpty, isFunction, isPlainObject, isString } = require 'lodash'
 { eachSeries } = require 'async'
 Errors = require './errors'
 
 to_object = (value, keys) ->
   return null unless isString(keys) or isArray(keys)
-  keys = [].concat keys
-  updates = object keys, (value for key in keys)
+  updates = {}
+  updates[key] = value for key in ([].concat keys)
+  updates
 
 to_array = (props) ->
   return null unless isPlainObject props
@@ -114,7 +115,7 @@ class Parser
                 errors.add prop, error for error in errs
                 next()
           () ->
-            updates["$#{operator.canonical}"] = extend(updates["$#{operator.canonical}"] || {}, operator.transform arg)
+            updates["$#{operator.canonical}"] = assign(updates["$#{operator.canonical}"] ? {}, operator.transform arg)
             next()
       () ->
         for prop, count of changed
