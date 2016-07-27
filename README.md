@@ -16,7 +16,7 @@ Patch Maker is a PATCH submission parser builder/dsl. It allows you to quickly a
 
 ## Examples
 
-Build a Parser (with the help of the 'accurize' module):
+Build a Parser (with the help of the 'accurized' module):
 
 ```coffee
 { field } = require 'accurize'
@@ -60,7 +60,7 @@ parser =
 ```
 
 ## Contributing
-In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality.
+In lieu of a formal style guide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality.
 
 ## Release History
 _(Nothing yet)_

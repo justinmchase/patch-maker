@@ -1,47 +1,7 @@
-{ assign, curry, find, identity, isArray, isEmpty, isFunction, isPlainObject, isString } = require 'lodash'
+{ assign, find, isEmpty, isString } = require 'lodash'
 { eachSeries } = require 'async'
-Errors = require './errors'
-
-to_object = (value, keys) ->
-  return null unless isString(keys) or isArray(keys)
-  updates = {}
-  updates[key] = value for key in ([].concat keys)
-  updates
-
-to_array = (props) ->
-  return null unless isPlainObject props
-  updates = {};
-  updates[prop] = [].concat value for prop, value of props
-  updates
-
-to_each = (props) ->
-  return null unless isPlainObject props
-  updates = {};
-  updates[prop] = { $each: [].concat value } for prop, value of props
-  updates
-
-class Operator
-
-  constructor: (@name, @plural, @aliases, @canonical, @transform=identity) ->
-    if isFunction @canonical
-      @transform = @canonical
-      @canonical = undefined
-    @canonical ?= @name
-
-  matches: (name) ->
-    name[1..] == @name or name[1..] in @aliases
-
-operators = [
-  new Operator 'set', false, []
-  new Operator 'del', false, [ 'delete'], 'unset', curry(to_object)(1)
-  new Operator 'inc', false, [ 'increment' ], curry(to_object)(1)
-  new Operator 'add', true, [], 'addToSet', to_each
-  new Operator 'rem', true, [ 'remove' ], 'pullAll', to_array
-  new Operator 'push', true, [ 'enq', 'enqueue' ], 'pushAll', to_array
-  new Operator 'pop', false, [], curry(to_object)(1)
-  new Operator 'deq', false, [ 'dequeue' ], 'pop', curry(to_object)(-1)
-]
-
+Errors = require '../errors'
+adapters = require './adapters'
 
 class Property
 
@@ -51,7 +11,7 @@ class Property
     @oper(operator) for operator in supported
 
   oper: (operator, validator) ->
-    validator ?= (args..., pass, fail) -> pass()
+    validator ?= (args..., pass, fail) -> pass args...
     @supported[operator] = validator
     @
 
@@ -69,7 +29,7 @@ class Property
 
 class Parser
 
-  constructor: (@properties=[]) ->
+  constructor: (@adapter, @properties=[]) ->
 
   prop: (name, operations..., configurator) ->
     if isString configurator
@@ -86,8 +46,7 @@ class Parser
     changed = {}
     eachSeries ([operation, arg] for operation, arg of operations),
       ([operation, arg], next) =>
-        operator = find operators, (operator) =>
-          operator.matches(operation)
+        operator = @adapter.operator_for(operation)
         unless operator?
           errors.add "Invalid operation: '#{operation}' specified."
           return next()
@@ -117,12 +76,13 @@ class Parser
           () ->
             updates["$#{operator.canonical}"] = assign(updates["$#{operator.canonical}"] ? {}, operator.transform arg)
             next()
-      () ->
+      () =>
         for prop, count of changed
           errors.add prop, "Multiple operations attempted on property '#{prop}'." if count > 1
-        if errors.empty then success(updates) else failure(errors.value)
+        if errors.empty then success(@adapter.adapt(updates)) else failure(errors.value)
 
-module.exports = (configurator) ->
-  parser = new Parser()
+module.exports = (adapter, configurator) ->
+  [ configurator, adapter ] = [ adapter, 'mongo' ] unless configurator
+  parser = new Parser(adapters[adapter] || adapter)
   configurator.apply parser
   parser
