@@ -37,7 +37,7 @@ class Parser
       configurator = null
     property = new Property(name, operations...)
     @properties.push property
-    configurator?.apply property
+    configurator?.apply property, [ property ]
     property
 
   parse: (operations, success, failure) =>
@@ -84,5 +84,5 @@ class Parser
 module.exports = (adapter, configurator) ->
   [ configurator, adapter ] = [ adapter, 'mongo' ] unless configurator
   parser = new Parser(adapters[adapter] || adapter)
-  configurator.apply parser
+  configurator.apply parser, [ parser ]
   parser
