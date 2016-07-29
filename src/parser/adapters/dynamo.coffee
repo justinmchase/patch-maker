@@ -44,6 +44,10 @@ val_for = (key, value) ->
   result[name_for key] = value
   result
 
+docClient = do () ->
+  client = null
+  () -> client ?= new (require('aws-sdk').DynamoDB.DocumentClient)()
+
 adaptations =
   set:
     action: 'SET'
@@ -82,7 +86,7 @@ adaptations =
       {
         expression: "#{path_for(key)} #{name_for(key)}"
         attributes: attrs_for key
-        values: val_for key, value
+        values: val_for key, docClient().createSet(value)
       } for key, value of entries
   rem:
     action: 'DELETE'
@@ -90,7 +94,7 @@ adaptations =
       {
         expression: "#{path_for(key)} #{name_for(key)}"
         attributes: attrs_for key
-        values: val_for key, value
+        values: val_for key, docClient().createSet(value)
       } for key, value of entries
   enq:
     action: 'SET'
