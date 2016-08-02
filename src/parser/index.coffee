@@ -6,7 +6,7 @@ adapters = require './adapters'
 class Property
 
   constructor: (@name, supported...) ->
-    @pattern = new RegExp("^#{@name}".replace('.', "\\.").replace(/\*$/, '.+') + '$')
+    @pattern = new RegExp("^#{@name}".replace(/\./g, '\\.').replace(/\*/g, '\\d+') + '$')
     @supported = {}
     @oper(operator) for operator in supported
 
