@@ -25,7 +25,7 @@ operators = [
   new Operator 'inc', false, [ 'increment' ], curry(to_object)(1)
   new Operator 'add', true, [], 'addToSet', to_each
   new Operator 'rem', true, [ 'remove' ], 'pullAll', to_array
-  new Operator 'push', true, [ 'enq', 'enqueue' ], 'pushAll', to_array
+  new Operator 'push', true, [ 'append', 'enq', 'enqueue' ], 'pushAll', to_array
   new Operator 'pop', false, [], curry(to_object)(1)
   new Operator 'deq', false, [ 'dequeue' ], 'pop', curry(to_object)(-1)
 ]

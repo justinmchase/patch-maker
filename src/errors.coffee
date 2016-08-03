@@ -6,9 +6,7 @@ class Errors
 
   add: (property, errors...) ->
     @empty = false
-    unless errors.length
-      errors = [ property ]
-      property = 'global'
+    [ property, errors ] = [ 'global', [ property ] ] unless errors.length
     @value[property] ?= errors: []
     @value[property].errors.push errors...
 

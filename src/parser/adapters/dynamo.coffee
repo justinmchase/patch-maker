@@ -28,14 +28,15 @@ operators = [
   new Operator 'dec', false, [ 'decrement' ], to_object 1
   new Operator 'add', true, [], to_arrays
   new Operator 'rem', true, [ 'remove' ], to_arrays
-  new Operator 'enq', true, [ 'enqueue' ], to_arrays
+  new Operator 'enq', true, [ 'enqueue', 'append', 'push' ], to_arrays
   new Operator 'deq', false, [ 'dequeue' ], to_object 1
 ]
 
 attrs_for = (key) ->
-  zipObject ("##{it}" for it in key.replace(/\.(\d+)/g, '$1').split '.'), key.replace(/\.(\d+)/g, '[$1]').split '.'
+  attrs = key.replace(/\.(\d+)/g, '').split '.'
+  zipObject ("##{it}" for it in attrs), attrs
 
-path_for = (key) -> "##{key.replace(/\.(\d+)/g, '$1').replace /\./g, '.#'}"
+path_for = (key) -> "##{key.replace(/\.(\d+)/g, '[$1]').replace /\./g, '.#'}"
 
 name_for = (key) -> ":#{camelCase key}"
 
