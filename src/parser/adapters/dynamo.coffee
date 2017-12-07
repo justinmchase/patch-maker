@@ -101,7 +101,7 @@ adaptations =
     action: 'SET'
     adapt: (entries) ->
       {
-        expression: "#{path_for(key)} = list_append(#{path_for(key)}, #{name_for(key)})"
+        expression: "#{path_for(key)} = list_append(if_not_exists(#{path_for(key), [])}, #{name_for(key)})"
         attributes: attrs_for key
         values: val_for key, value
       } for key, value of entries
